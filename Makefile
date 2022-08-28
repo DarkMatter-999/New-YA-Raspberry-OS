@@ -57,7 +57,7 @@ clean:
 	rm -rf $(BIN_DIR)
 
 run:
-	qemu-system-aarch64 -M raspi3b -kernel $(BIN_DIR)/kernel8.img -d in_asm
+	qemu-system-aarch64 -M raspi3b -kernel $(BIN_DIR)/kernel8.img
 
 debug:
-	qemu-system-aarch64 -M raspi3b -kernel $(BIN_DIR)/kernel8.elf -s -S
+	qemu-system-aarch64 -M raspi3b -serial null -serial stdio -kernel $(BIN_DIR)/kernel8.elf -s -S
