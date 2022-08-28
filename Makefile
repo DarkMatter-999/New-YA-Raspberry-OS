@@ -1,8 +1,8 @@
 CROSS_COMPILE = aarch64-linux-gnu-
 CC = $(CROSS_COMPILE)gcc
 
-CFLAGS= -ffreestanding $(DIRECTIVES)
-CSRCFLAGS= -Wall -Wextra
+CFLAGS= -Wall -O2 -ffreestanding -nostdinc -nostdlib -nostartfiles $(DIRECTIVES)
+CSRCFLAGS= -Wall -Wextra -mgeneral-regs-only
 LFLAGS= -ffreestanding -O2 -nostdlib
 
 
@@ -33,7 +33,7 @@ all: clean $(ASM_OBJS) $(KER_OBJS) $(LIB_OBJS) link
 $(OBJ_DIR)/%.o: $(KER_SRCDIR)/%.S
 	@mkdir -p $(@D)
 	$(info Building: $@)
-	@$(CROSS_COMPILE)as -c $< -o $@
+	@$(CC) -I$(KER_HEADDIR) -c $< -o $@
 
 $(OBJ_DIR)/%.o: $(KER_SRCDIR)/%.c
 	@mkdir -p $(@D)
@@ -46,8 +46,18 @@ $(OBJ_DIR)/%.o: $(LIB_SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -I$(KER_HEADDIR) -I$(LIB_HEADDIR) -c $< -o $@ $(CSRCFLAGS)
 
 link: $(OBJS)
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(BIN_DIR)
 	@echo $(OBJS)
+	@$(CROSS_COMPILE)ld -T $(KER_SRCDIR)/linker.ld -o $(BIN_DIR)/kernel8.elf $(OBJS)
+	@$(CROSS_COMPILE)objcopy $(BIN_DIR)/kernel8.elf -O binary $(BIN_DIR)/kernel8.img
 
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(BIN_DIR)
+
+run:
+	qemu-system-aarch64 -M raspi3b -kernel $(BIN_DIR)/kernel8.img -d in_asm
+
+debug:
+	qemu-system-aarch64 -M raspi3b -kernel $(BIN_DIR)/kernel8.elf -s -S
