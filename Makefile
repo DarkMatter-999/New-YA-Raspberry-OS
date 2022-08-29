@@ -28,7 +28,7 @@ LIB_OBJS := $(patsubst $(LIB_SRCDIR)/%.c, $(OBJ_DIR)/%.o, $(LIB_SRCS))
 OBJS = $(ASM_OBJS) $(KER_OBJS) $(LIB_OBJS)
 
 
-all: clean $(ASM_OBJS) $(KER_OBJS) $(LIB_OBJS) link
+all: $(ASM_OBJS) $(KER_OBJS) $(LIB_OBJS) link
 
 $(OBJ_DIR)/%.o: $(KER_SRCDIR)/%.S
 	@mkdir -p $(@D)
