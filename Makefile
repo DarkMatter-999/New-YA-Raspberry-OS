@@ -45,11 +45,17 @@ $(OBJ_DIR)/%.o: $(LIB_SRCDIR)/%.c
 	$(info Building: $@)
 	@$(CC) $(CFLAGS) -I$(KER_HEADDIR) -I$(LIB_HEADDIR) -c $< -o $@ $(CSRCFLAGS)
 
-link: $(OBJS)
+font_psf.o: font.psf
+	@$(CROSS_COMPILE)ld -r -b binary -o $(OBJ_DIR)/font_psf.o font.psf
+
+font_sfn.o: font.sfn
+	@$(CROSS_COMPILE)ld -r -b binary -o $(OBJ_DIR)/font_sfn.o font.sfn
+
+link: font_psf.o font_sfn.o $(OBJS)
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(BIN_DIR)
 	@echo $(OBJS)
-	@$(CROSS_COMPILE)ld -T $(KER_SRCDIR)/linker.ld -o $(BIN_DIR)/kernel8.elf $(OBJS)
+	@$(CROSS_COMPILE)ld -T $(KER_SRCDIR)/linker.ld -o $(BIN_DIR)/kernel8.elf $(OBJ_DIR)/font_psf.o $(OBJ_DIR)/font_sfn.o $(OBJS)
 	@$(CROSS_COMPILE)objcopy $(BIN_DIR)/kernel8.elf -O binary $(BIN_DIR)/kernel8.img
 
 clean:

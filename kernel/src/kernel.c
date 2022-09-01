@@ -14,7 +14,11 @@ void kernel_main()
     lfb_init();
     uart_puts("Linear Framebuffer initialized successfully\n");
 
-    lfb_showpicture();
+    // display string with PSF Fonts
+    lfb_print(80, 80, "Hello World!");
+
+    // display a UTF-8 string on screen with SSFN
+    lfb_proprint(80, 120, "Hello World!");
 
     while(1) {
         uart_send(uart_getc());
