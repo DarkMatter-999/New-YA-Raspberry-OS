@@ -2,6 +2,7 @@
 #include "rand.h"
 #include "lfb.h"
 #include "sd.h"
+#include "fat.h"
 
 extern unsigned char _end;
 
@@ -19,10 +20,12 @@ void kernel_main()
 
     // initialize EMMC and detect SD card type
     if(sd_init()==SD_OK) {
-        // read the master boot record after our bss segment
-        if(sd_readblock(0,&_end,1)) {
-            // dump it to serial console
-            uart_dump(&_end);
+        // read the master boot record and find our partition
+        if(fat_getpartition()) {
+            // list root directory entries
+            fat_listdirectory();
+        } else {
+            uart_puts("FAT partition not found???\n");
         }
     }
     
