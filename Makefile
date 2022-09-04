@@ -63,7 +63,10 @@ clean:
 	rm -rf $(BIN_DIR)
 
 run:
-	qemu-system-aarch64 -M raspi3b -serial stdio -kernel $(BIN_DIR)/kernel8.img
+	qemu-system-aarch64 -M raspi3b -serial stdio -kernel $(BIN_DIR)/kernel8.img -drive file=sd.img,if=sd,format=raw
 
 debug:
 	qemu-system-aarch64 -M raspi3b -serial stdio -kernel $(BIN_DIR)/kernel8.elf -s -S
+
+mkimg:
+	dd if=/dev/urandom of=sd.img count=2048
